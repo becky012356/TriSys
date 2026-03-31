@@ -40,14 +40,17 @@ st.markdown("""
 #MainMenu, footer, header { visibility: hidden; }
 .block-container { padding-top: 0 !important; max-width: 540px; }
 
-/* Login page background */
+/* App background (logged-in pages) */
 [data-testid="stAppViewContainer"] > .main {
-    background: linear-gradient(135deg, #1a73e8, #0d47a1) !important;
+    background: #f0f4f8 !important;
     min-height: 100vh;
 }
-.login-box {
-    margin-top: 80px;
+
+/* Login override */
+.login-bg [data-testid="stAppViewContainer"] > .main {
+    background: linear-gradient(135deg, #1a73e8, #0d47a1) !important;
 }
+.login-box { margin-top: 60px; }
 .login-title { text-align:center; font-size:28px; font-weight:700; color:#1a73e8; margin-bottom:4px; }
 .login-sub   { text-align:center; color:#555; font-size:14px; margin-bottom:20px; }
 
@@ -64,14 +67,21 @@ st.markdown("""
     background: linear-gradient(135deg, #1a73e8, #0d47a1);
     color:#fff; padding:16px 20px;
     font-size:20px; font-weight:700; margin-bottom:12px;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 4px 12px rgba(26,115,232,.25);
 }
 
-/* Table header row */
-.tbl-head {
-    background: #1a73e8; color:#fff;
-    padding: 9px 8px; font-weight:600; font-size:14px;
-    border-radius:4px 4px 0 0;
+/* Content card wrapping table area */
+.content-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px;
+    margin: 0 0 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.07);
 }
+
+/* Table rows styling */
+.row-even { background: #f7f9fc; border-radius: 6px; }
 
 /* Form card */
 .form-card {
@@ -101,6 +111,12 @@ div[data-testid="stForm"] { border:none !important; padding:0 !important; }
 # ── Login ────────────────────────────────────────────────────────────────────
 
 def login_page():
+    st.markdown("""
+    <style>
+    [data-testid="stAppViewContainer"] > .main {
+        background: linear-gradient(135deg, #1a73e8, #0d47a1) !important;
+    }
+    </style>""", unsafe_allow_html=True)
     _, col, _ = st.columns([1, 2, 1])
     with col:
         st.markdown('<div class="login-box">', unsafe_allow_html=True)
@@ -123,6 +139,7 @@ def main_page():
     u = st.session_state.user
     st.markdown(f'<div class="welcome-bar"><h2>歡迎，{u["username"]}</h2><p>請選擇功能</p></div>', unsafe_allow_html=True)
 
+    st.markdown('<div style="background:#fff;border-radius:12px;padding:20px;margin:12px 0;box-shadow:0 2px 8px rgba(0,0,0,.07);">', unsafe_allow_html=True)
     c1, c2 = st.columns(2)
     with c1:
         if st.button("客戶資料", use_container_width=True, key="btn_cust"): st.session_state.page="cust"; st.rerun()
@@ -130,8 +147,8 @@ def main_page():
     with c2:
         if st.button("廠商資料", use_container_width=True, key="btn_fact"): st.session_state.page="fact"; st.rerun()
         if st.button("用戶管理", use_container_width=True, key="btn_user"): st.session_state.page="user"; st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown("<br>", unsafe_allow_html=True)
     if st.button("登出", use_container_width=True):
         st.session_state.user = None; st.rerun()
 
@@ -168,24 +185,32 @@ def render_table(rows, col_keys, col_headers, key_prefix, on_edit, on_del):
     if not rows:
         st.info("查無資料"); return
 
-    # Header
     widths = [3] * len(col_keys) + [1, 1]
-    hcols = st.columns(widths)
-    for i, h in enumerate(col_headers):
-        hcols[i].markdown(f"**{h}**")
-    hcols[-2].markdown("**修改**")
-    hcols[-1].markdown("**刪除**")
-    st.divider()
+
+    # Header
+    header_md = "".join(
+        f"<div style='flex:{w};padding:9px 8px;font-weight:700;font-size:13px;color:#fff;'>{h}</div>"
+        for w, h in zip(widths, col_headers + ["修改", "刪除"])
+    )
+    st.markdown(
+        f"<div style='display:flex;background:linear-gradient(90deg,#1a73e8,#1558b0);"
+        f"border-radius:8px 8px 0 0;margin-bottom:2px;'>{header_md}</div>",
+        unsafe_allow_html=True
+    )
 
     # Rows
-    for row in rows:
-        rcols = st.columns(widths)
-        for i, k in enumerate(col_keys):
-            rcols[i].write(str(row.get(k, "") or ""))
-        if rcols[-2].button("修改", key=f"e_{key_prefix}_{row[col_keys[0]]}"):
-            on_edit(row)
-        if rcols[-1].button("刪除", key=f"d_{key_prefix}_{row[col_keys[0]]}"):
-            on_del(row[col_keys[0]])
+    for idx, row in enumerate(rows):
+        bg = "#f7f9fc" if idx % 2 == 0 else "#ffffff"
+        with st.container():
+            st.markdown(f"<div style='background:{bg};border-radius:4px;'>", unsafe_allow_html=True)
+            rcols = st.columns(widths)
+            for i, k in enumerate(col_keys):
+                rcols[i].write(str(row.get(k, "") or ""))
+            if rcols[-2].button("修改", key=f"e_{key_prefix}_{row[col_keys[0]]}"):
+                on_edit(row)
+            if rcols[-1].button("刪除", key=f"d_{key_prefix}_{row[col_keys[0]]}"):
+                on_del(row[col_keys[0]])
+            st.markdown("</div>", unsafe_allow_html=True)
 
 # ── CUST ─────────────────────────────────────────────────────────────────────
 
