@@ -48,8 +48,8 @@ st.markdown("""
 .login-box {
     margin-top: 80px;
 }
-.login-title { text-align:center; font-size:28px; font-weight:700; color:#fff; margin-bottom:4px; }
-.login-sub   { text-align:center; color:rgba(255,255,255,.8); font-size:14px; margin-bottom:20px; }
+.login-title { text-align:center; font-size:28px; font-weight:700; color:#1a73e8; margin-bottom:4px; }
+.login-sub   { text-align:center; color:#555; font-size:14px; margin-bottom:20px; }
 
 /* Welcome bar */
 .welcome-bar {
