@@ -40,20 +40,19 @@ st.markdown("""
 #MainMenu, footer, header { visibility: hidden; }
 .block-container { padding-top: 0 !important; max-width: 540px; }
 
-/* Login */
-.login-wrap {
+/* Login page background */
+[data-testid="stAppViewContainer"] > .main {
+    background: linear-gradient(135deg, #1a73e8, #0d47a1) !important;
     min-height: 100vh;
-    display: flex; align-items: center; justify-content: center;
-    background: linear-gradient(135deg, #1a73e8, #0d47a1);
-    padding: 24px;
 }
-.login-card {
+.login-box {
     background: #fff; border-radius: 20px;
-    padding: 40px 32px; width: 100%; max-width: 380px;
-    box-shadow: 0 16px 48px rgba(0,0,0,.22);
+    padding: 36px 28px 24px;
+    box-shadow: 0 16px 48px rgba(0,0,0,.25);
+    margin-top: 80px;
 }
-.login-title { text-align:center; font-size:28px; font-weight:700; color:#1a73e8; margin-bottom:6px; }
-.login-sub   { text-align:center; color:#888; font-size:14px; margin-bottom:28px; }
+.login-title { text-align:center; font-size:26px; font-weight:700; color:#1a73e8; margin-bottom:4px; }
+.login-sub   { text-align:center; color:#888; font-size:14px; margin-bottom:20px; }
 
 /* Welcome bar */
 .welcome-bar {
@@ -105,19 +104,21 @@ div[data-testid="stForm"] { border:none !important; padding:0 !important; }
 # ── Login ────────────────────────────────────────────────────────────────────
 
 def login_page():
-    st.markdown('<div class="login-wrap"><div class="login-card">', unsafe_allow_html=True)
-    st.markdown('<div class="login-title">TriSys</div><div class="login-sub">企業資料管理系統</div>', unsafe_allow_html=True)
-    with st.form("login_form"):
-        userid = st.text_input("用戶代碼", placeholder="請輸入帳號")
-        pwd    = st.text_input("密碼", type="password", placeholder="請輸入密碼")
-        ok     = st.form_submit_button("登入", use_container_width=True)
-    if ok:
-        rows = query("SELECT userid, username FROM [user] WHERE userid=%s AND pwd=%s", (userid, pwd))
-        if rows:
-            st.session_state.user = rows[0]; st.rerun()
-        else:
-            st.error("帳號或密碼錯誤")
-    st.markdown('</div></div>', unsafe_allow_html=True)
+    _, col, _ = st.columns([1, 2, 1])
+    with col:
+        st.markdown('<div class="login-box">', unsafe_allow_html=True)
+        st.markdown('<div class="login-title">TriSys</div><div class="login-sub">企業資料管理系統</div>', unsafe_allow_html=True)
+        with st.form("login_form"):
+            userid = st.text_input("用戶代碼", placeholder="請輸入帳號")
+            pwd    = st.text_input("密碼", type="password", placeholder="請輸入密碼")
+            ok     = st.form_submit_button("登入", use_container_width=True)
+        if ok:
+            rows = query("SELECT userid, username FROM [user] WHERE userid=%s AND pwd=%s", (userid, pwd))
+            if rows:
+                st.session_state.user = rows[0]; st.rerun()
+            else:
+                st.error("帳號或密碼錯誤")
+        st.markdown('</div>', unsafe_allow_html=True)
 
 # ── Main menu ────────────────────────────────────────────────────────────────
 
