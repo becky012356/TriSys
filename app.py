@@ -46,13 +46,10 @@ st.markdown("""
     min-height: 100vh;
 }
 .login-box {
-    background: #fff; border-radius: 20px;
-    padding: 36px 28px 24px;
-    box-shadow: 0 16px 48px rgba(0,0,0,.25);
     margin-top: 80px;
 }
-.login-title { text-align:center; font-size:26px; font-weight:700; color:#1a73e8; margin-bottom:4px; }
-.login-sub   { text-align:center; color:#888; font-size:14px; margin-bottom:20px; }
+.login-title { text-align:center; font-size:28px; font-weight:700; color:#fff; margin-bottom:4px; }
+.login-sub   { text-align:center; color:rgba(255,255,255,.8); font-size:14px; margin-bottom:20px; }
 
 /* Welcome bar */
 .welcome-bar {
